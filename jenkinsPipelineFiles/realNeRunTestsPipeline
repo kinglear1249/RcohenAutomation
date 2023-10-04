@@ -1,0 +1,158 @@
+
+pipeline
+{
+    agent { label 'Npt-Agent' }
+    options
+    {
+        buildDiscarder(logRotator(numToKeepStr: "30", artifactNumToKeepStr: "30"))
+        timestamps ()
+    }
+
+    parameters
+    {
+        gitParameter branchFilter: "origin/(.*)", defaultValue: "master", name: "BRANCH", type: "PT_BRANCH"
+        choice(name: "TestSuite", choices: "none\nv9_0\nv9_0_1\nv9_0_1+SrTe\nv9_0G1\nv9_0G2\nv9_0G3\nv9_0G4\nv9_0G5\nv9_0G6\nevpn\nsingleHome\nsingleHomeTp\nmultiHome\nsfa\nportActive\nves\nevpnVpws\nvlanAware\nl3vpn\nigp\nisis\nospf\nsrTe\nbgpSrTe\nbgpSrTeE2E\nvplsSrTeE2E\nevpnSrTe\nevpnSrTeE2E\nrsvpTe\nbgp\nbgpTp\nbgpLu\nbgpLuOptionC\nbgpLuMultiAbr\nBgpLuPrefixSid\nBgpLuTp\nbgpRtc\nbgpPic\npece\nlayer2Service\nvpws\nvpls\npht\nmspw\nmspwVpws\nmspwVpls\nmplsTp\ntunnelPolicy\nfrr\nbfd\nscale\nsBfd\nanyCast\nbspOS\nmyTest", description: "Test suite to run")
+        choice(name: "SingleTestToRun", choices:"none\n0100_bgpIsisLdpSanityTest\n0102_bgpIsisLdpFrrTest\n0103_bgpIsisLdpWithRRRoutesTest\n0104_bgpIsisLdpWithRRScaleTest\n0110_bgpIsisSrSanityTest\n0120_bgpIsisTunnelPolicySanityTest\n0121_bgpIsisTunnelPolicyLdpTest\n0122_bgpIsisTunnelPolicySrVsLdpTest\n0200_bgpLuOptionCIsisLdpSanityTest\n0201_bgpLuOptionCIsisLdpScaleTest\n0210_bgpLuOptionCIsisSrSanityTest\n0211_bgpLuOptionCIsisSrPrefixSidTest\n0220_bgpLuMultiAbrIsisLdpSanityTest\n0221_bgpLuMultiAbrIsisVsBgpTest\n0230_bgpLuIsisPrefixSidSanityTest\n0231_bgpLuIsisPrefixSidSrgbTest\n0232_bgpLuIsisTunnelPolicySanityTest\n0233_bgpLuIsisTunnelPolicyProfilesTest\n0250_bgpRtcPeOnlySanityTest\n0251_bgpRtcPeOnlyParamsTest\n0260_bgpRtcWithRRSanityTest\n0261_bgpRtcWithRRNonClientTest\n0270_bgpPicSanityTest\n0271_bgpPicSameRdTest\n0500_isisSingleInstSingleLevelSanityTest\n0510_isisLdpSingleInstSingleLevelSanityTest\n0520_isisLdpSingleInstMultiLevelSanityTest\n0521_isisLdpSingleInstMultiLevelAttachedBitTest\n0530_isisMultiInstSingleLevelSanityTest\n0540_isisSrAnycastSanityTest\n0550_ospfSingleAreaStaticRoutesTest\n0560_ospfSingleAreaLdpSanityTest\n0570_ospfMultiAreaLdpSanityTest\n0600_vpwsIsisLdpSanityTest\n0601_vpwsIsisLdpScaleTest\n0602_vpwsIsisLdpTunnelPolicyTest\n0610_vpwsIsisLdpRsvpTeTunnelPolicyTest\n0621_vpwsIsisSrTunnelPolicyTest\n0622_vpwsIsisSrVsLdpTunnelPolicyTest\n0630_vpwsOspfLdpSanityTest\n0640_vpwsMplsTpSanityTest\n0650_vplsIsisLdpSanityTest\n0651_vplsIsisLdpScaleTest\n0652_vplsIsisLdpFrrTest\n0653_vplsIsisLdpBfdSingleHopTest\n0663_vplsIsisSrFrrTest\n0670_vplsOspfLdpSanityTest\n0671_vplsOspfLdpBfdMultiHopTest\n0681_vplsOspfSrFrrTest\n0690_phtIsisVpwsVrfSanityTest\n0691_phtIsisVplsVrfSanityTest\n0692_phtIsis2Vpws2VrfSanityTest\n0693_phtIsis2VpwsVrfSanityTest\n0700_mspwVpwsIsisStaticStaticTest\n0701_mspwVpwsIsisStaticDynamicTest\n0710_mspwVpwsOspfStaticStaticTest\n0711_mspwVpwsOspfStaticDynamicTest\n0720_mspwVplsIsisStaticStaticTest\n0721_mspwVplsIsisStaticDynamicTest\n0730_mspwVplsOspfStaticStaticTest\n0731_mspwVplsOspfStaticDynamicTest\n2000_peceOspfIsisIpv4SanityTest\n2001_peceOspfIsisIpv4RoutesTest\n2002_peceOspfIsisIpv4ParamsTest\n2020_peceeBgpSanityTest\n0850_isisSrTeNodeSidTest\n0851_isisSrTeNodeRemoteAddressTest\n0852_isisSrTeLabelAdjSidTest\n0853_isisSrTeAdjInterfaceRemoteAddressTest\n0854_isisSrTeAdjNodeSidLabelTest\n0901_isisSrTeAnycastNodeSidTest\n0902_isisSrTeAnycastInterfaceLabelTest\n1250_bgpSrTeNodeSidTunnelTest\n1251_bgpSrTeNodeRemoteAddressTunnelTest\n1252_bgpSrTeInterfaceLabelTunnelTest\n1253_bgpSrTeAdjNodeSidLabelTunnelTest\n1254_bgpSrTeAdjInterfaceRemoteAddressTunnelTest\n1255_bgpSrTeE2EAdjacencySanityTest\n1256_bgpSrTeE2EsBfdSanityTest\n1257_bgpSrTeE2EsBfdAdvancedTest\n1260_bgpLuSrTeTunnelPolicyTest\n1300_vplsSrTeE2EAdjacencySanityTest\n1301_vplsSrTeE2EsBfdSanityTest\n1350_evpnSrTeSingleHomeTpSanityTest\n1351_evpnSrTeSingleHomeTpMultiTunnelTest\n1352_evpnSrTeSingleHomeTpLinkCutTest\n1360_evpnSrTeE2EAdjacencySanityTest\n1361_evpnSrTeE2EsBfdSanityTest\n1750_evpnSingleHomeSanityTest\n1751_evpnSingleHomeIrbTest\n1752_evpnSingleHomeScaleTest\n1760_evpnSingleHomeTpAutoVsSrTest\n1761_evpnSingleHomeTpSrVsLdpTest\n1762_evpnSingleHomeTpSrVsRsvpTeTest\n1770_evpnMultiHomeSanityTest\n1771_evpnMultiHomeProtectionTest\n1780_evpnSfaSanityTest\n1790_evpnPaVlanCarvingSanityTest\n1791_evpnPaPrefBasedSanityTest\n1792_evpnPaNonPreemptiveSanityTest\n1795_evpnPaVlanCarvingBumTrafficTest\1796_evpnPaPrefBasedBumTrafficTest\n1797_evpnPaNonPreemptiveBumTrafficTest\n1800_evpnVesStaticTunnelSanityTest\n1801_evpnVesStaticTunnelMultiPwvTest\n1810_evpnVesDynamicTunnelSanityTest\n1811_evpnVesDynamicTunnelMultiPwvTest\n1812_evpnVesDynamicTunnelMultiHomeTest\n1820_evpnVpwsSanityTest\n1821_evpnVpwsSameRouteTest\n1822_evpnVpwsPaMultiHomeTest\n1830_evpnVaBundleSanityTest\n1831_evpnVaBundle2BdTest\n0001_bgpLuOptionCIsisLdpTopology\n0001_bgpLuOptionCIsisSrTopology\n0001_bgpLuMultiAbrIsisLdpTopology\n0001_evpnSingleHomeTopology\n0001_evpnMultiHomeTopology\n0001_evpnSfaTopology", description: "Enter the name of a SINGLE test you wish to run")
+        string(name: "CostumeTestSuite", description: "Enter the name of a your costume test suite you wish to run")
+        string(name: "NumberOfTimesToRunTest", defaultValue: "1", description: "Enter the number of times you wish to run the entire same test/suite in a loop (until it fails)")
+        choice(name: "IsGrEnabled", choices: "false\ntrue", description: "Indicates if GR will be enabled on NEs")
+        choice(name: "StopOnFail", choices: "no\nyes", description: "Should the run stop upon the first failure (step/test)")
+        choice(name: "WithTraffic", choices: "false\ntrue", description: "Indicates if Traffic tests will be enabled on NEs")
+        choice(name: "Stability", choices: "false\ntrue", description: "Indicates if Stability session will be performed")
+        choice(name: "deletePreviousSetupConfig", choices: "true\nfalse", description: "Indicates if previous setup configuration will be deleted")
+    }
+
+    environment
+    {
+        jenkins_pipeline_files_folder_path = "jenkinsPipelineFiles"
+    }
+
+    stages
+    {
+        stage("Prepare Automation")
+        {
+            steps
+            {
+                script
+                {
+                    git branch: "${params.BRANCH}", credentialsId: "SSH_user_name_with_private_key", url: "ssh://git@ilptltvbbp01.ecitele.com:7999/npttes/nptautomationtesting.git"
+                }
+
+                echo "\n=============  prepare Robot variables ============== "
+                script
+                {
+                    echo "TestSuite is:${params.TestSuite}"
+                    echo "SingleTestToRun is:${params.SingleTestToRun}"
+                    echo "CostumeTestSuite is:${params.CostumeTestSuite}"
+                    utils_groovy_module = load "${jenkins_pipeline_files_folder_path}/jenkinsUtils.groovy"
+                    test_suite_robot_variable = utils_groovy_module.get_desired_test_suite_robot_variable(params.TestSuite, params.SingleTestToRun, params.CostumeTestSuite)
+                    def job_name = JOB_NAME
+                    println("The job name is:" + job_name)
+                    SetupNumber = utils_groovy_module.get_real_ne_setup_number(job_name)
+                    println("The setup number parsed is:" + SetupNumber)
+                    virtual_env_dir_name = "nptAutomationTesting_env"
+                    automation_project_root_dir = "${WORKSPACE}"
+                    //automation_project_root_dir += "/nptAutomationTesting"
+                }
+                echo "test suite robot variable to use was set to:${test_suite_robot_variable}"
+
+                echo "\n=============  Creating virtual environment ============= "
+                script
+                {
+                    utils_groovy_module.create_virtual_environment(virtual_env_dir_name)
+                }
+                echo "Done creating virtual environment"
+
+                echo "\n============= install automation project within the virtual environment ==========="
+                script
+                {
+                    utils_groovy_module.install_automation_project(virtual_env_dir_name)
+                }
+                echo "Done installing the automation project within the virtual environment"
+            }
+        }
+
+        stage("Get NEs current versions")
+        {
+            steps
+            {
+                echo "About to invoke the get current version utility"
+                script
+                {
+                    robot_command = utils_groovy_module.compose_get_ne_versions_command_line(SetupNumber,
+                                                                            automation_project_root_dir,
+                                                                            "${WORKSPACE}")
+                    echo "the robot command to use is:${robot_command}"
+                    utils_groovy_module.run_robot_command(robot_command, virtual_env_dir_name, "1")
+                }
+            }
+        }
+
+        stage("Run tests")
+        {
+            steps
+            {
+                sh """
+                    echo "list all files in temporary workspace before running tests"
+                    ls -la ${WORKSPACE}
+                """
+                echo "\n============= Compose Robot command ================="
+                script
+                {
+                    echo "test suite robot variable to use was set to:${test_suite_robot_variable}"
+                    robot_command = utils_groovy_module.compose_npt_automation_tests_command_line(SetupNumber,
+                                                                          "${WORKSPACE}",
+                                                                          "${test_suite_robot_variable}",
+                                                                          "${IsGrEnabled}",
+                                                                          "${StopOnFail}",
+                                                                          "${WithTraffic}",
+                                                                          "${Stability}",
+                                                                          "${deletePreviousSetupConfig}")
+
+                    echo "\n============= Run Tests ====================="
+                    utils_groovy_module.run_robot_command(robot_command, virtual_env_dir_name, params.NumberOfTimesToRunTest)
+                }
+                echo "Done running the robot test(s) suite(s) from within the virtual environment"
+            }
+        }
+    } // stages
+
+    post
+    {
+        always
+        {
+            archiveArtifacts artifacts: '*.html', fingerprint: true, allowEmptyArchive:true
+            archiveArtifacts artifacts: '*.txt', fingerprint: true, allowEmptyArchive:true
+            archiveArtifacts artifacts: 'test_*.zip', fingerprint: true, allowEmptyArchive:true
+            archiveArtifacts artifacts: 'test_*/*/*', fingerprint: true, allowEmptyArchive:true
+            archiveArtifacts artifacts: 'restpy.log', fingerprint: true, allowEmptyArchive:true
+            script
+            {
+                String dswp_and_st_versions = utils_groovy_module.getDswpAndStVersionsForCurrentRun("${WORKSPACE}")
+                def subject = "${env.JOB_NAME}" + " with versions:" + dswp_and_st_versions + " - Build #${env.BUILD_NUMBER} ${currentBuild.result}"
+                utils_groovy_module.sendEmail(subject)
+            }
+
+            script
+            {
+                step([
+                        $class                    : "RobotPublisher",
+                        outputPath                : "${env.WORKSPACE}",
+                        outputFileName            : "*.xml",
+                        reportFileName            : "report.html",
+                        logFileName               : "log.html",
+                        disableArchiveOutput      : false
+                     ])
+            }
+
+        }
+
+        cleanup
+        {
+            echo "Starting post-cleanup stage, about to clean the workspace"
+            cleanWs()
+            echo "Done post-cleanup stage"
+        }
+    } // post
+} // pipeline
+

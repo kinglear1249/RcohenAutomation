@@ -1,0 +1,226 @@
+
+pipeline
+{
+    agent { label 'Npt-Agent' }
+    options
+    {
+        buildDiscarder(logRotator(numToKeepStr: "20", artifactNumToKeepStr: "20"))
+        timestamps ()
+    }
+
+    parameters
+    {
+        // for debug purpose allow running from private branch (not just "master")
+        //gitParameter branchFilter: "origin/(.*)", defaultValue: "master", name: "BRANCH", type: "PT_BRANCH"
+        string(name: "dswpBranchName", defaultValue: "v9.0.2_release-dev",  description: "The branch name of the DSWP that is about to be tested")
+        string(name: "dswpBinFileFullPath", description: "The full path to the DSWP.bin file")
+        string(name: "x86_64_intel_dswpBinFileFullPath", description: "The full path to the x86_64_intel DSWP.bin file")
+        choice(name: "TestSuite", choices: "v9_0G1\nv9_0G2\nv9_0G3\nv9_0G4\nv9_0G5\nv9_0G6\nv9_0G7\nv9_1G8\nv9_1G9", description: "Test suite to run")
+    }
+
+    environment
+    {
+        jenkins_pipeline_files_folder_path = "jenkinsPipelineFiles"
+    }
+
+    stages
+    {
+        stage("Prepare Automation")
+        {
+            steps
+            {
+                script
+                {
+                    git branch: "master", credentialsId: "SSH_user_name_with_private_key", url: "ssh://git@ilptltvbbp01.ecitele.com:7999/npttes/nptautomationtesting.git"
+
+                    echo "\n=============  prepare Robot variables ============== "
+                    // sanity check for DSWP.bin tree name
+                    if ("${params.dswpBranchName}" != "v9.0.2_release-dev" && "${params.dswpBranchName}" != "v9.1.0_release-dev")
+                    {
+                        def String errorMsg = "currently only v9.0.2_release-dev and v9.1.0_release-dev is supported, got branch:" + dswpBranchName
+                        println(errorMsg)
+                        error(errorMsg)
+                    }
+                    if ("${params.TestSuite}" == "v9_0G1")
+                    {
+                        SetupNumber = "5"
+                        WithTraffic = "true"
+                        IsGrEnabled = "false"
+                    }
+                    else if ("${params.TestSuite}" == "v9_0G2")
+                    {
+                        SetupNumber = "6"
+                        WithTraffic = "true"
+                        IsGrEnabled = "false"
+                    }
+                    else if ("${params.TestSuite}" == "v9_0G3")
+                    {
+                        SetupNumber = "7"
+                        WithTraffic = "false"
+                        IsGrEnabled = "false"
+                    }
+                    else if ("${params.TestSuite}" == "v9_0G4")
+                    {
+                        SetupNumber = "9"
+                        WithTraffic = "true"
+                        IsGrEnabled = "false"
+                    }
+                    else if ("${params.TestSuite}" == "v9_0G5")
+                    {
+                        SetupNumber = "20"
+                        WithTraffic = "true"
+                        IsGrEnabled = "true"
+                    }
+                    else if ("${params.TestSuite}" == "v9_0G6")
+                    {
+                        SetupNumber = "23"
+                        WithTraffic = "true"
+                        IsGrEnabled = "false"
+                    }
+                    else if ("${params.TestSuite}" == "v9_0G7")
+                    {
+                        SetupNumber = "8"
+                        WithTraffic = "true"
+                        IsGrEnabled = "false"
+                    }
+                    else if ("${params.TestSuite}" == "v9_1G8")
+                    {
+                        SetupNumber = "1"
+                        WithTraffic = "true"
+                        IsGrEnabled = "false"
+                    }
+                    else if ("${params.TestSuite}" == "v9_1G9")
+                    {
+                        SetupNumber = "2"
+                        WithTraffic = "true"
+                        IsGrEnabled = "false"
+                    }
+
+                    print("=============================================================\n"
+                          + "=============================================================")
+                    println("BUILD_NUMBER is: ${env.BUILD_NUMBER}")
+                    println("JOB_NAME is: ${env.JOB_NAME}")
+                    println("WORKSPACE is: ${WORKSPACE}")
+                    println("The DSWP branch that was used is: ${params.dswpBranchName}")
+                    println("DSWP.bin file is: ${params.dswpBinFileFullPath}")
+                    println("x86_64_intel_DSWP.bin file is: ${params.x86_64_intel_dswpBinFileFullPath}")
+                    println("The TestSuite used is: ${params.TestSuite}")
+                    println("The Setup used is: ${SetupNumber}")
+                    println("WithTraffic: ${WithTraffic}")
+                    println("IsGrEnabled: ${IsGrEnabled}")
+                    print("=============================================================\n"
+                          + "=============================================================")
+
+                    utils_groovy_module = load "${jenkins_pipeline_files_folder_path}/jenkinsUtils.groovy"
+                    virtual_env_dir_name = "nptAutomationTesting_env"
+                    automation_project_root_dir = "${WORKSPACE}"
+                        //automation_project_root_dir += "/nptAutomationTesting"
+                    test_suite_robot_variable = utils_groovy_module.get_desired_test_suite_robot_variable("${params.TestSuite}", "", "")
+                }
+
+                echo "\n=============  Creating virtual environment ============= "
+                echo "Creating virtual environment"
+                script
+                {
+                    utils_groovy_module.create_virtual_environment(virtual_env_dir_name)
+                }
+                echo "Done creating virtual environment"
+
+                echo "\n============= install automation project within the virtual environment ==========="
+                echo "About to install the automation project within the virtual environment"
+                script
+                {
+                    utils_groovy_module.install_automation_project(virtual_env_dir_name)
+                }
+                echo "Done installing the automation project within the virtual environment"
+            }
+        }
+
+        stage("Deploy DSWP.bin on HW setup")
+        {
+            steps
+            {
+                //
+                echo "Deploying DSWP.bin on the NEs of this setup"
+                script
+                {
+                    robot_command = utils_groovy_module.compose_npt_deploy_command_line(SetupNumber,
+                                                                            automation_project_root_dir,
+                                                                            "${WORKSPACE}",
+                                                                            "${params.dswpBinFileFullPath}",
+                                                                            "${params.x86_64_intel_dswpBinFileFullPath}",
+                                                                            "",
+                                                                            "",
+                                                                            "true")
+                    echo "the robot command to use is:${robot_command}"
+                    utils_groovy_module.run_robot_command(robot_command, virtual_env_dir_name, "1")
+                }
+            }
+        }
+
+        stage("Get NEs current versions")
+        {
+            steps
+            {
+                echo "About to invoke the get current version utility"
+                script
+                {
+                    robot_command = utils_groovy_module.compose_get_ne_versions_command_line(SetupNumber,
+                                                                            automation_project_root_dir,
+                                                                            "${WORKSPACE}")
+                    echo "the robot command to use is:${robot_command}"
+                    utils_groovy_module.run_robot_command(robot_command, virtual_env_dir_name, "1")
+                }
+            }
+        }
+
+        stage("Run automation tests")
+        {
+            steps
+            {
+                echo "Deployment went well, now running the robot test(s)"
+                script
+                {
+                    echo "test suite robot variable to use was set to:${test_suite_robot_variable}"
+                    robot_command = utils_groovy_module.compose_npt_automation_tests_command_line(SetupNumber,
+                                                                              "${WORKSPACE}",
+                                                                              "${test_suite_robot_variable}",
+                                                                              IsGrEnabled,
+                                                                              "false",
+                                                                              WithTraffic,
+                                                                              "false",
+                                                                              "true")
+
+                    echo "the robot command to use is:${robot_command}"
+                    utils_groovy_module.run_robot_command(robot_command, virtual_env_dir_name, "1")
+                    echo "Done running the robot test(s) suite(s) from within the virtual environment"
+                }
+            }
+        }
+    } // stages
+
+    post
+    {
+        always
+        {
+            archiveArtifacts artifacts: '*.txt', fingerprint: true, allowEmptyArchive:true
+            archiveArtifacts artifacts: '*.html', fingerprint: true, allowEmptyArchive:true
+            archiveArtifacts artifacts: 'test_*.zip', fingerprint: true, allowEmptyArchive:true
+            archiveArtifacts artifacts: 'test_*/*/*', fingerprint: true, allowEmptyArchive:true
+            archiveArtifacts artifacts: 'restpy.log', fingerprint: true, allowEmptyArchive:true
+            script
+            {
+                String dswp_and_st_versions = utils_groovy_module.getDswpAndStVersionsForCurrentRun("${WORKSPACE}")
+                def subject = "${env.JOB_NAME}" + " with versions:" + dswp_and_st_versions + " - Build #${env.BUILD_NUMBER} ${currentBuild.result}"
+                utils_groovy_module.sendEmail(subject)
+            }
+        }
+
+        cleanup
+        {
+            echo "Starting post-cleanup stage, about to clean the workspace"
+            cleanWs()
+            echo "Done post-cleanup stage"
+        }
+    } // post
+} // pipeline

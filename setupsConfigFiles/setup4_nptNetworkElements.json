@@ -1,0 +1,239 @@
+{
+  "setupName": "Setup_4",
+  "teqChassisIp": "172.30.80.134",
+  "NEs":
+  [
+    {
+      "neNum": 1,
+      "neName": "NE_1",
+      "neId": 21,
+      "ipAddress": "172.30.82.21",
+      "neType": "1800",
+      "userName": "admin",
+      "password": "admin1",
+      "isDualMcp": false,
+      "neCards": [
+        {
+          "cardType": "dhxe-4",
+          "slot": 11,
+          "ports": [
+            {
+              "portNum": 101,
+              "description": "NE1toTeqPort1",
+              "portRate": "xe",
+              "physicalPort": 4,
+              "teqPort": {
+                "teqPortName": "port1",
+                "teqSlot": 6,
+                "teqPhysicalPort": 13,
+                "media": "fiber",
+                "speed": "speed10g"
+              }
+            },
+            {
+              "portNum": 111,
+              "description": "NE1toNE1Port3-Loop",
+              "portRate": "xe",
+              "physicalPort": 2
+            },
+            {
+              "portNum": 112,
+              "description": "NE1toNE1Port2-Loop",
+              "portRate": "xe",
+              "physicalPort": 3
+            },
+            {
+              "portNum": 121,
+              "description": "NE1toNE2Port1",
+              "portRate": "xe",
+              "physicalPort": 1
+            }
+          ]
+        },
+        {
+          "cardType": "dhxe-4",
+          "slot": 12,
+          "ports": [
+            {
+              "portNum": 122,
+              "description": "NE1toNE2Port2",
+              "portRate": "xe",
+              "physicalPort": 1
+            },
+            {
+              "portNum": 131,
+              "description": "NE1toNE3Port1",
+              "portRate": "xe",
+              "physicalPort": 3
+            },
+            {
+              "portNum": 141,
+              "description": "NE1toNE4Port1",
+              "portRate": "xe",
+              "physicalPort": 2
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "neNum": 2,
+      "neName": "NE_2",
+      "neId": 22,
+      "ipAddress": "172.30.82.22",
+      "neType": "1800",
+      "userName": "admin",
+      "password": "admin1",
+      "isDualMcp": false,
+      "neCards": [
+        {
+          "cardType": "dhxe-4",
+          "slot": 11,
+          "ports": [
+            {
+              "portNum": 201,
+              "description": "NE2toTeqPort1",
+              "portRate": "xe",
+              "physicalPort": 4,
+              "teqPort": {
+                "teqPortName": "port2",
+                "teqSlot": 6,
+                "teqPhysicalPort": 14,
+                "media": "fiber",
+                "speed": "speed10g"
+              }
+            },
+            {
+              "portNum": 211,
+              "description": "NE2toNE1Port1",
+              "portRate": "xe",
+              "physicalPort": 1
+            }
+          ]
+        },
+        {
+          "cardType": "dhxe-4",
+          "slot": 12,
+          "ports": [
+            {
+              "portNum": 212,
+              "description": "NE2toNE1Port2",
+              "portRate": "xe",
+              "physicalPort": 1
+            },
+            {
+              "portNum": 231,
+              "description": "NE2toNE3Port1",
+              "portRate": "xe",
+              "physicalPort": 3
+            },
+            {
+              "portNum": 241,
+              "description": "NE2toNE4Port1",
+              "portRate": "xe",
+              "physicalPort": 4
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "neNum": 3,
+      "neName": "NE_3",
+      "neId": 23,
+      "ipAddress": "172.30.82.23",
+      "neType": "1800",
+      "userName": "admin",
+      "password": "admin1",
+      "isDualMcp": false,
+      "neCards": [
+        {
+          "cardType": "dhxe-4",
+          "slot": 10,
+          "ports": [
+            {
+              "portNum": 301,
+              "description": "NE3toTeqPort1",
+              "portRate": "xe",
+              "physicalPort": 4,
+              "teqPort": {
+                "teqPortName": "port3",
+                "teqSlot": 6,
+                "teqPhysicalPort": 15,
+                "media": "fiber",
+                "speed": "speed10g"
+              }
+            },
+            {
+              "portNum": 311,
+              "description": "NE3toNE1Port1",
+              "portRate": "xe",
+              "physicalPort": 2
+            },
+            {
+              "portNum": 321,
+              "description": "NE3toNE2Port1",
+              "portRate": "xe",
+              "physicalPort": 3
+            },
+            {
+              "portNum": 341,
+              "description": "NE3toNE4Port1",
+              "portRate": "xe",
+              "physicalPort": 1
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "neNum": 4,
+      "neName": "NE_4",
+      "neId": 25,
+      "ipAddress": "172.30.82.25",
+      "neType": "1050",
+      "userName": "admin",
+      "password": "admin1",
+      "isDualMcp": false,
+      "neCards": [
+        {
+          "cardType": "amxe-4dr",
+          "slot": "xsa",
+          "ports": [
+            {
+              "portNum": 401,
+              "description": "NE4toTeqPort1",
+              "portRate": "xe",
+              "physicalPort": 2,
+              "teqPort": {
+                "teqPortName": "port4",
+                "teqSlot": 6,
+                "teqPhysicalPort": 16,
+                "media": "fiber",
+                "speed": "speed10g"
+              }
+            },
+            {
+              "portNum": 411,
+              "description": "NE4toNE1Port1",
+              "portRate": "xe",
+              "physicalPort": 4
+            },
+            {
+              "portNum": 421,
+              "description": "NE4toNE2Port1",
+              "portRate": "xe",
+              "physicalPort": 3
+            },
+            {
+              "portNum": 431,
+              "description": "NE4toNE3Port1",
+              "portRate": "xe",
+              "physicalPort": 1
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,426 @@
+{
+  "setupName": "Setup_Traffic",
+  "NEs":
+  [
+    {
+      "neNum": 1,
+      "topology":
+      {
+        "deviceGroup": {
+          "multiplier": 10,
+          "ethernet": {
+            "macSingle": "00:01:01:01:01:01",
+            "macIncrenmentStartValue": "00:01:01:01:01:01",
+            "macIncrenmentStepValue": "00:00:00:00:00:01",
+            "enableVlanSingle": true,
+            "vlanIdSingle": 111,
+            "vlanIncrenmentStartValue": 111,
+            "vlanIncrenmentStepValue": 1,
+            "ipv4":
+            {
+              "addressSingleValue": "100.191.111.2",
+              "gatewaySingleValue": "100.191.111.1",
+              "addressIncrenmentStartValue": "100.191.111.2",
+              "addressIncrenmentStepValue": "0.0.0.2",
+              "gatewayIncrenmentStartValue": "100.191.111.1",
+              "gatewayIncrenmentStepValue": "0.0.0.2",
+              "bgpIpv4Peer":{
+                "type": "external",
+                "dutIpSingleValue": "100.191.111.1",
+                "dutIpIncrementStartValue": "100.191.111.1",
+                "dutIpIncrementStepValue": "0.0.0.2",
+                "localAs": 400
+              },
+              "NetworkGroup": {
+                "multiplier": 10,
+                "addressIncrenmentStartValue": "200.1.0.0",
+                "addressIncrenmentStepValue": "0.0.1.0",
+                "numberOfAddresses": 1,
+                "prefix": 32
+              }
+            }
+          }
+        }
+      },
+      "trafficItem": {
+        "biDirectional": false,
+        "trackByList": [
+          "trackingenabled0"
+        ],
+        "rawPacket":
+        {
+          "macSingle": "00:01:01:01:01:01",
+          "macIncrenmentStartValue": "00:01:01:01:01:01",
+          "macIncrenmentStepValue": "00:00:00:00:00:01",
+          "macCountValue": 1,
+          "enableVlanSingle": true,
+          "vlanIdSingle": 999,
+          "addressSingleValue": "100.191.111.2",
+          "gatewaySingleValue": "100.191.111.1"
+        },
+        "endPoint": {
+          "sources": "Topo-1",
+          "destinations": "Topo-3"
+        },
+        "configElement": {
+          "frameRateRate": 28,
+          "frameRateType": "framesPerSecond",
+          "transmitionControlType": "continuous",
+          "frameRateDistributionPortDistrbution": "splitRateEvenly",
+          "frameSizeFixedSize": 128
+        }
+      }
+    },
+    {
+      "neNum": 2,
+      "topology":
+      {
+        "deviceGroup":
+        {
+          "multiplier": 10,
+          "ethernet":
+          {
+            "macSingle": "00:02:02:02:02:01",
+            "macIncrenmentStartValue": "00:02:02:02:02:01",
+            "macIncrenmentStepValue": "00:00:00:00:00:01",
+            "enableVlanSingle": true,
+            "vlanIdSingle": 222,
+            "vlanIncrenmentStartValue": 222,
+            "vlanIncrenmentStepValue": 1,
+            "ipv4":
+            {
+              "addressSingleValue": "100.192.122.2",
+              "gatewaySingleValue": "100.192.122.1",
+              "addressIncrenmentStartValue": "100.192.122.2",
+              "addressIncrenmentStepValue": "0.0.0.2",
+              "gatewayIncrenmentStartValue": "100.192.122.1",
+              "gatewayIncrenmentStepValue": "0.0.0.2",
+              "bgpIpv4Peer":{
+                "type": "external",
+                "dutIpSingleValue": "100.192.122.1",
+                "dutIpIncrementStartValue": "100.192.122.1",
+                "dutIpIncrementStepValue": "0.0.0.2",
+                "localAs": 400
+              },
+              "NetworkGroup": {
+                "multiplier": 10,
+                "addressIncrenmentStartValue": "200.2.0.0",
+                "addressIncrenmentStepValue": "0.0.1.0",
+                "numberOfAddresses": 1,
+                "prefix": 32
+              }
+            }
+          }
+        }
+      },
+      "trafficItem":
+      {
+        "biDirectional": false,
+        "trackByList": [
+          "trackingenabled0"
+        ],
+        "rawPacket":
+        {
+          "macSingle": "00:02:02:02:02:01",
+          "macIncrenmentStartValue": "00:02:02:02:02:01",
+          "macIncrenmentStepValue": "00:00:00:00:00:01",
+          "macCountValue": 1,
+          "enableVlanSingle": true,
+          "vlanIdSingle": 999,
+          "addressSingleValue": "100.192.122.2",
+          "gatewaySingleValue": "100.192.122.1"
+        },
+        "endPoint": {
+          "sources": "Topo-2",
+          "destinations": "Topo-1"
+        },
+        "configElement": {
+          "frameRateRate": 28,
+          "frameRateType": "framesPerSecond",
+          "transmitionControlType": "continuous",
+          "frameRateDistributionPortDistrbution": "splitRateEvenly",
+          "frameSizeFixedSize": 128
+        }
+      }
+    },
+    {
+      "neNum": 3,
+      "topology":
+      {
+        "deviceGroup":
+        {
+          "multiplier": 10,
+          "ethernet":
+          {
+            "macSingle": "00:03:03:03:03:01",
+            "macIncrenmentStartValue": "00:03:03:03:03:01",
+            "macIncrenmentStepValue": "00:00:00:00:00:01",
+            "enableVlanSingle": true,
+            "vlanIdSingle": 333,
+            "vlanIncrenmentStartValue": 333,
+            "vlanIncrenmentStepValue": 1,
+            "ipv4":
+            {
+              "addressSingleValue": "100.193.133.2",
+              "gatewaySingleValue": "100.193.133.1",
+              "addressIncrenmentStartValue": "100.193.133.2",
+              "addressIncrenmentStepValue": "0.0.0.2",
+              "gatewayIncrenmentStartValue": "100.193.133.1",
+              "gatewayIncrenmentStepValue": "0.0.0.2",
+              "bgpIpv4Peer":{
+                "type": "external",
+                "dutIpSingleValue": "100.193.133.1",
+                "dutIpIncrementStartValue": "100.193.133.1",
+                "dutIpIncrementStepValue": "0.0.0.2",
+                "localAs": 400
+              },
+              "NetworkGroup": {
+                "multiplier": 10,
+                "addressIncrenmentStartValue": "200.3.0.0",
+                "addressIncrenmentStepValue": "0.0.1.0",
+                "numberOfAddresses": 1,
+                "prefix": 32
+              }
+            }
+          }
+        }
+      },
+      "trafficItem":
+      {
+        "biDirectional": false,
+        "trackByList": [
+          "trackingenabled0"
+        ],
+        "rawPacket":
+        {
+          "macSingle": "00:03:03:03:03:01",
+          "macIncrenmentStartValue": "00:03:03:03:03:01",
+          "macIncrenmentStepValue": "00:00:00:00:00:01",
+          "macCountValue": 1,
+          "enableVlanSingle": true,
+          "vlanIdSingle": 999,
+          "addressSingleValue": "100.193.133.2",
+          "gatewaySingleValue": "100.193.133.1"
+        },
+        "endPoint": {
+          "sources": "Topo-3",
+          "destinations": "Topo-1"
+        },
+        "configElement": {
+          "frameRateRate": 28,
+          "frameRateType": "framesPerSecond",
+          "transmitionControlType": "continuous",
+          "frameRateDistributionPortDistrbution": "splitRateEvenly",
+          "frameSizeFixedSize": 128
+        }
+      }
+    },
+    {
+      "neNum": 4,
+      "topology": {
+        "deviceGroup": {
+          "multiplier": 10,
+          "ethernet": {
+            "macSingle": "00:04:04:04:04:01",
+            "macIncrenmentStartValue": "00:04:04:04:04:01",
+            "macIncrenmentStepValue": "00:00:00:00:00:01",
+            "enableVlanSingle": true,
+            "vlanIdSingle": 444,
+            "vlanIncrenmentStartValue": 444,
+            "vlanIncrenmentStepValue": 1,
+            "ipv4": {
+              "addressSingleValue": "100.194.144.2",
+              "gatewaySingleValue": "100.194.144.1",
+              "addressIncrenmentStartValue": "100.194.144.2",
+              "addressIncrenmentStepValue": "0.0.0.2",
+              "gatewayIncrenmentStartValue": "100.194.144.1",
+              "gatewayIncrenmentStepValue": "0.0.0.2",
+              "bgpIpv4Peer":{
+                "type": "external",
+                "dutIpSingleValue": "100.194.144.1",
+                "dutIpIncrementStartValue": "100.194.144.1",
+                "dutIpIncrementStepValue": "0.0.0.2",
+                "localAs": 400
+              },
+              "NetworkGroup": {
+                "multiplier": 10,
+                "addressIncrenmentStartValue": "200.4.0.0",
+                "addressIncrenmentStepValue": "0.0.1.0",
+                "numberOfAddresses": 1,
+                "prefix": 32
+              }
+            }
+          }
+        }
+      },
+      "trafficItem": {
+        "biDirectional": false,
+        "trackByList": [
+          "trackingenabled0"
+        ],
+        "rawPacket":
+        {
+          "macSingle": "00:04:04:04:04:01",
+          "macIncrenmentStartValue": "00:04:04:04:04:01",
+          "macIncrenmentStepValue": "00:00:00:00:00:01",
+          "macCountValue": 1,
+          "enableVlanSingle": true,
+          "vlanIdSingle": 999,
+          "addressSingleValue": "100.194.144.2",
+          "gatewaySingleValue": "100.194.144.1"
+        },
+        "endPoint": {
+          "sources": "Topo-4",
+          "destinations": "Topo-1"
+        },
+        "configElement": {
+          "frameRateRate": 28,
+          "frameRateType": "framesPerSecond",
+          "transmitionControlType": "continuous",
+          "frameRateDistributionPortDistrbution": "splitRateEvenly",
+          "frameSizeFixedSize": 128
+        }
+      }
+    },
+    {
+      "neNum": 5,
+      "topology": {
+        "deviceGroup": {
+          "multiplier": 10,
+          "ethernet": {
+            "macSingle": "00:05:05:05:05:01",
+            "macIncrenmentStartValue": "00:05:05:05:05:01",
+            "macIncrenmentStepValue": "00:00:00:00:00:01",
+            "enableVlanSingle": true,
+            "vlanIdSingle": 555,
+            "vlanIncrenmentStartValue": 555,
+            "vlanIncrenmentStepValue": 1,
+            "ipv4": {
+              "addressSingleValue": "100.195.155.2",
+              "gatewaySingleValue": "100.195.155.1",
+              "addressIncrenmentStartValue": "100.195.155.2",
+              "addressIncrenmentStepValue": "0.0.0.2",
+              "gatewayIncrenmentStartValue": "100.195.155.1",
+              "gatewayIncrenmentStepValue": "0.0.0.2",
+              "bgpIpv4Peer":{
+                "type": "external",
+                "dutIpSingleValue": "100.195.155.1",
+                "dutIpIncrementStartValue": "100.195.155.1",
+                "dutIpIncrementStepValue": "0.0.0.2",
+                "localAs": 400
+              },
+              "NetworkGroup": {
+                "multiplier": 10,
+                "addressIncrenmentStartValue": "200.5.0.0",
+                "addressIncrenmentStepValue": "0.0.1.0",
+                "numberOfAddresses": 1,
+                "prefix": 32
+              }
+            }
+          }
+        }
+      },
+      "trafficItem": {
+        "biDirectional": false,
+        "trackByList": [
+          "trackingenabled0"
+        ],
+        "rawPacket":
+        {
+          "macSingle": "00:05:05:05:05:01",
+          "macIncrenmentStartValue": "00:05:05:05:05:01",
+          "macIncrenmentStepValue": "00:00:00:00:00:01",
+          "macCountValue": 1,
+          "enableVlanSingle": true,
+          "vlanIdSingle": 999,
+          "addressSingleValue": "100.195.155.2",
+          "gatewaySingleValue": "100.195.155.1"
+        },
+        "endPoint": {
+          "sources": "Topo-5",
+          "destinations": "Topo-6"
+        },
+        "configElement": {
+          "frameRateRate": 28,
+          "frameRateType": "framesPerSecond",
+          "transmitionControlType": "continuous",
+          "frameRateDistributionPortDistrbution": "splitRateEvenly",
+          "frameSizeFixedSize": 128
+        }
+      }
+    },
+    {
+      "neNum": 6,
+      "topology":
+      {
+        "deviceGroup":
+        {
+          "multiplier": 10,
+          "ethernet":
+          {
+            "macSingle": "00:06:06:06:06:01",
+            "macIncrenmentStartValue": "00:06:06:06:06:01",
+            "macIncrenmentStepValue": "00:00:00:00:00:01",
+            "enableVlanSingle": true,
+            "vlanIdSingle": 666,
+            "vlanIncrenmentStartValue": 666,
+            "vlanIncrenmentStepValue": 1,
+            "ipv4":
+            {
+              "addressSingleValue": "100.196.166.2",
+              "gatewaySingleValue": "100.196.166.1",
+              "addressIncrenmentStartValue": "100.196.166.2",
+              "addressIncrenmentStepValue": "0.0.0.2",
+              "gatewayIncrenmentStartValue": "100.196.166.1",
+              "gatewayIncrenmentStepValue": "0.0.0.2",
+              "bgpIpv4Peer":{
+                "type": "external",
+                "dutIpSingleValue": "100.196.166.1",
+                "dutIpIncrementStartValue": "100.196.166.1",
+                "dutIpIncrementStepValue": "0.0.0.2",
+                "localAs": 400
+              },
+              "NetworkGroup": {
+                "multiplier": 10,
+                "addressIncrenmentStartValue": "200.6.0.0",
+                "addressIncrenmentStepValue": "0.0.1.0",
+                "numberOfAddresses": 1,
+                "prefix": 32
+              }
+            }
+          }
+        }
+      },
+      "trafficItem":
+      {
+        "biDirectional": false,
+        "trackByList": [
+          "trackingenabled0"
+        ],
+        "rawPacket":
+        {
+         "macSingle": "00:06:06:06:06:01",
+          "macIncrenmentStartValue": "00:06:06:06:06:01",
+          "macIncrenmentStepValue": "00:00:00:00:00:01",
+          "macCountValue": 1,
+          "enableVlanSingle": true,
+          "vlanIdSingle": 999,
+          "addressSingleValue": "100.196.166.2",
+          "gatewaySingleValue": "100.196.166.1"
+        },
+        "endPoint": {
+          "sources": "Topo-6",
+          "destinations": "Topo-5"
+        },
+        "configElement":
+        {
+          "frameRateRate": 28,
+          "frameRateType": "framesPerSecond",
+          "transmitionControlType": "continuous",
+          "frameRateDistributionPortDistrbution": "splitRateEvenly",
+          "frameSizeFixedSize": 128
+        }
+      }
+    }
+  ]
+}

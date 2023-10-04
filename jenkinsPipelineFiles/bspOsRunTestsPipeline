@@ -1,0 +1,142 @@
+
+pipeline
+{
+    agent { label 'Npt-Agent' }
+    options
+    {
+        buildDiscarder(logRotator(numToKeepStr: "30", artifactNumToKeepStr: "30"))
+        timestamps ()
+    }
+
+    parameters
+    {
+        gitParameter branchFilter: "origin/(.*)", defaultValue: "master", name: "BRANCH", type: "PT_BRANCH"
+        choice(name: "TestSuite", choices: "none\n", description: "Test suite to run")
+        choice(name: "SingleTestToRun", choices:"none\n0100_bspOsGenericTest\n0101_bspOsDeploymentTest\n0110_bspOsNpt2100Test\n0120_bspOsNpt2300Test\n0130_bspOsNpt2400Test\n0140_bspOsNpt2700Test", description: "Enter the name of a SINGLE test you wish to run")
+        string(name: "BSP_OS_DATA_FILE_PATH", description: "The full path to the BSP-OS automation data file")
+        string(name: "NumberOfTimesToRunTest", defaultValue: "1", description: "Enter the number of times you wish to run the entire same test/suite in a loop (until it fails)")
+        choice(name: "StopOnFail", choices: "no\nyes", description: "Should the run stop upon the first failure (step/test)")
+    }
+
+    environment
+    {
+        jenkins_pipeline_files_folder_path = "jenkinsPipelineFiles"
+    }
+
+    stages
+    {
+        stage("Prepare Automation")
+        {
+            steps
+            {
+                script
+                {
+                    git branch: "${params.BRANCH}", credentialsId: "SSH_user_name_with_private_key", url: "ssh://git@ilptltvbbp01.ecitele.com:7999/npttes/nptautomationtesting.git"
+                }
+
+                echo "\n=============  prepare Robot variables ============== "
+                script
+                {
+                    echo "TestSuite is:${params.TestSuite}"
+                    echo "SingleTestToRun is:${params.SingleTestToRun}"
+                    utils_groovy_module = load "${jenkins_pipeline_files_folder_path}/jenkinsUtils.groovy"
+                    test_suite_robot_variable = utils_groovy_module.get_desired_test_suite_robot_variable(params.TestSuite, params.SingleTestToRun, "")
+                    def job_name = JOB_NAME
+                    println("The job name is:" + job_name)
+                    SetupNumber = utils_groovy_module.get_real_ne_setup_number(job_name)
+                    println("The setup number parsed is:" + SetupNumber)
+                    virtual_env_dir_name = "nptAutomationTesting_env"
+                    automation_project_root_dir = "${WORKSPACE}"
+                }
+                echo "test suite robot variable to use was set to:${test_suite_robot_variable}"
+
+                echo "\n=============  Creating virtual environment ============= "
+                script
+                {
+                    utils_groovy_module.create_virtual_environment(virtual_env_dir_name)
+                }
+                echo "Done creating virtual environment"
+
+                echo "\n============= install automation project within the virtual environment ==========="
+                script
+                {
+                    utils_groovy_module.install_automation_project(virtual_env_dir_name)
+                }
+                echo "Done installing the automation project within the virtual environment"
+
+                echo "\n============= copy BSP-OS data file to workspace =================="
+                script
+                {
+                    rc = sh(script: "cp ${params.BSP_OS_DATA_FILE_PATH} ${WORKSPACE}/bspOsAutomationDataFile.txt", returnStatus: true)
+                    if (rc != 0)
+                    {
+                        def String errorMsg = "was unable to copy file:${params.BSP_OS_DATA_FILE_PATH} to:${WORKSPACE}"
+                        println(errorMsg)
+                        error(errorMsg)
+                    }
+                    println("successfully copied file:${params.BSP_OS_DATA_FILE_PATH} in to WORKSPACE")
+                }
+            }
+        }
+
+        stage("Run BSP-OS tests")
+        {
+            steps
+            {
+                sh """
+                    echo "list all files in temporary workspace before running tests"
+                    ls -la ${WORKSPACE}
+                """
+                echo "\n============= Compose Robot command ================="
+                script
+                {
+                    robot_command = utils_groovy_module.compose_bsp_os_automation_tests_command_line(SetupNumber,
+                                                                          "${WORKSPACE}",
+                                                                          "${params.BSP_OS_DATA_FILE_PATH}",
+                                                                          "${test_suite_robot_variable}",
+                                                                          "${StopOnFail}")
+                    echo "\n============= Run Tests ====================="
+                    utils_groovy_module.run_robot_command(robot_command, virtual_env_dir_name, params.NumberOfTimesToRunTest)
+                }
+
+                echo "Done running the robot test(s) suite(s) from within the virtual environment"
+            }
+        }
+    } // stages
+
+    post
+    {
+        always
+        {
+            archiveArtifacts artifacts: '*.html', fingerprint: true, allowEmptyArchive:true
+            archiveArtifacts artifacts: '*.txt', fingerprint: true, allowEmptyArchive:true
+            archiveArtifacts artifacts: 'test_*.zip', fingerprint: true, allowEmptyArchive:true
+            archiveArtifacts artifacts: 'test_*/*/*', fingerprint: true, allowEmptyArchive:true
+            archiveArtifacts artifacts: 'restpy.log', fingerprint: true, allowEmptyArchive:true
+            script
+            {
+                String dswp_and_st_versions = utils_groovy_module.getDswpAndStVersionsForCurrentRun("${WORKSPACE}")
+                def subject = "${env.JOB_NAME}" + " with versions:" + dswp_and_st_versions + " - Build #${env.BUILD_NUMBER} ${currentBuild.result}"
+                utils_groovy_module.sendEmail(subject)
+            }
+            script
+            {
+                step([
+                        $class                    : "RobotPublisher",
+                        outputPath                : "${env.WORKSPACE}",
+                        outputFileName            : "*.xml",
+                        reportFileName            : "report.html",
+                        logFileName               : "log.html",
+                        disableArchiveOutput      : false
+                     ])
+            }
+        }
+        cleanup
+        {
+            echo "Starting post-cleanup stage, about to clean the workspace"
+            cleanWs()
+            echo "Done post-cleanup stage"
+        }
+    } // post
+} // pipeline
+

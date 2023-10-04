@@ -1,0 +1,176 @@
+
+pipeline
+{
+    agent { label 'Npt-Agent' }
+    options
+    {
+        buildDiscarder(logRotator(numToKeepStr: "20", artifactNumToKeepStr: "20"))
+        timestamps ()
+    }
+
+    parameters
+    {
+        gitParameter branchFilter: "origin/(.*)", defaultValue: "master", name: "BRANCH", type: "PT_BRANCH"
+        string(name: "SCENARIO_FILE_PATH", description: "The full path to the VIL Memory Leak Scenario text file")
+    }
+
+    environment
+    {
+        jenkins_pipeline_files_folder_path = "jenkinsPipelineFiles"
+    }
+
+    stages
+    {
+        stage("Prepare Automation")
+        {
+            steps
+            {
+                //
+                script
+                {
+                    git branch: "${params.BRANCH}", credentialsId: "SSH_user_name_with_private_key", url: "ssh://git@ilptltvbbp01.ecitele.com:7999/npttes/nptautomationtesting.git"
+                }
+
+                //
+                echo "\n=============  Creating virtual environment ============= "
+                script
+                {
+                    utils_groovy_module = load "${jenkins_pipeline_files_folder_path}/jenkinsUtils.groovy"
+                    virtual_env_dir_name = "nptAutomationTesting_env"
+                    utils_groovy_module.create_virtual_environment(virtual_env_dir_name)
+                }
+                echo "Done creating virtual environment"
+
+                //
+                echo "\n============= install automation project within the virtual environment ==========="
+                script
+                {
+                        utils_groovy_module.install_automation_project(virtual_env_dir_name)
+                }
+                echo "Done installing the automation project within the virtual environment"
+
+                //
+                echo "\n============= get current version =================="
+                script
+                {
+                    def job_name = JOB_NAME
+                    println("The job name is:" + job_name)
+                    SetupNumber = utils_groovy_module.get_real_ne_setup_number(job_name)
+                    println("The setup number parsed is:" + SetupNumber)
+                    def String get_curr_versions_utility_name = "getCurrentNeVersionsUtility"
+                    dswp_and_st_versions_file_full_path = "${WORKSPACE}" + "/dswpAndStversions.json"
+                    def String setup_number = SetupNumber
+                    def String ne_id = 111
+                    def String ip_address = ""
+                    // check if DUT ip address is not VIL setup
+                    // copy scenario file to workspace
+                    rc = sh(script: "cp ${params.SCENARIO_FILE_PATH} ${WORKSPACE}/scenarioFile.txt", returnStatus: true)
+                    if (rc != 0)
+                    {
+                        def String errorMsg = "was unable to copy file:${params.SCENARIO_FILE_PATH} to:${WORKSPACE}"
+                        println(errorMsg)
+                        error(errorMsg)
+                    }
+                    println("successfully copied file:${params.SCENARIO_FILE_PATH} in to WORKSPACE")
+                    memory_leak_dut_ip = utils_groovy_module.get_memory_leak_dut_ip("${WORKSPACE}")
+                    if ((ip_address == "") && (memory_leak_dut_ip == ""))
+                    {
+                       ip_address = "172.30.86.54"
+                    }
+                    else if (memory_leak_dut_ip != "")
+                    {
+                       ip_address = memory_leak_dut_ip
+                    }
+                    println("ip_address= " + ip_address)
+                    utility_args_list = [setup_number, ne_id, ip_address]
+                    utility_cmd_line = utils_groovy_module.compose_utility_command_line(get_curr_versions_utility_name, "${WORKSPACE}", utility_args_list)
+                    println("about to run the get current versions utility with the following command line arguments:" + utility_cmd_line)
+                }
+                script
+                {
+                    rc = sh(script: ". ${virtual_env_dir_name}/bin/activate; ${utility_cmd_line}", returnStatus: true)
+                    if (rc == 0)
+                    {
+                        println("Successfully extracted current versions")
+                    }
+                    else
+                    {
+                        error("Was unable to extract current versions !!")
+                    }
+                }
+                sh """
+                    echo "Composed the following DSWP and ST JSON versions file:"
+                    cat ${dswp_and_st_versions_file_full_path}
+                """
+            }
+        }
+
+        stage("Run VIL Memory Leak scenario")
+        {
+            steps
+            {
+                sh """
+                    echo "list all files in temporary workspace before running utility"
+                    ls -la ${WORKSPACE}
+                """
+                echo "\n============= Compose Robot command ================="
+                script
+                {
+                    def job_name = JOB_NAME
+                    println("The job name is:" + job_name)
+                    def String automation_project_root_dir = "${WORKSPACE}"
+                    // automation_project_root_dir += "/nptAutomationTesting"
+                    robot_command = utils_groovy_module.compose_vil_memory_leak_scenario_command_line( \
+                                                                  automation_project_root_dir, "${WORKSPACE}",\
+                                                                  "${params.SCENARIO_FILE_PATH}")
+
+                    echo "\n============= Run vilMemoryLeak utility ================"
+                    rc = sh(script: ". ${virtual_env_dir_name}/bin/activate; ${robot_command}", returnStatus: true)
+                    if (rc == 0)
+                    {
+                        println("Successfully run VIL memory leak scenario on VIL setup")
+                    }
+                    else
+                    {
+                        error("Was unable to successfully run VIL memory leak scenario on VIL setup")
+                    }
+                }
+            }
+        }
+    } // stages
+
+    post
+    {
+        always
+        {
+            archiveArtifacts artifacts: '*.txt', fingerprint: true, allowEmptyArchive:true
+            archiveArtifacts artifacts: '*.html', fingerprint: true, allowEmptyArchive:true
+            archiveArtifacts artifacts: 'ZipFolder*.zip', fingerprint: true, allowEmptyArchive:true
+            script
+            {
+                String dswp_and_st_versions = utils_groovy_module.getDswpAndStVersionsForCurrentRun("${WORKSPACE}")
+                def subject = "${env.JOB_NAME}" + " with versions:" + dswp_and_st_versions + " - Build #${env.BUILD_NUMBER} ${currentBuild.result}"
+                utils_groovy_module.sendEmail(subject)
+            }
+
+            script
+            {
+                step([
+                        $class                    : "RobotPublisher",
+                        outputPath                : "${env.WORKSPACE}",
+                        outputFileName            : "*.xml",
+                        reportFileName            : "report.html",
+                        logFileName               : "log.html",
+                        disableArchiveOutput      : false
+                     ])
+            }
+        }
+
+        cleanup
+        {
+            echo "Starting post-cleanup stage, about to clean the workspace"
+            cleanWs()
+            echo "Done post-cleanup stage"
+        }
+    } // post
+} // pipeline

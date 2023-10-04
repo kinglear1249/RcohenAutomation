@@ -1,0 +1,129 @@
+
+pipeline
+{
+    agent { label 'Npt-Agent' }
+    options
+    {
+        buildDiscarder(logRotator(numToKeepStr: "20", artifactNumToKeepStr: "20"))
+        timestamps ()
+    }
+
+    parameters
+    {
+        // for debug purpose allow running from private branch (not just "master")
+        //gitParameter branchFilter: "origin/(.*)", defaultValue: "master", name: "BRANCH", type: "PT_BRANCH"
+        string(name: "FSL_PPC_DSWP_FILE", description: "The full path to the fsl_ppc DSWP.out/DSWP.bin file")
+        string(name: "INTEL_x86_DSWP_FILE", description: "The full path to the intel_x86 DSWP.out/DSWP.bin file")
+        string(name: "ST_FILES_PATH", description: "The full path to a folder that contains ST files")
+        choice(name: "deletePreviousSetupConfig", choices: "false\ntrue", description: "Indicates if previous setup configuration will be deleted")
+    }
+
+    environment
+    {
+        jenkins_pipeline_files_folder_path = "jenkinsPipelineFiles"
+    }
+
+    stages
+    {
+        stage("Prepare Automation")
+        {
+            steps
+            {
+                //script
+                //{
+                //    git branch: "${params.BRANCH}", credentialsId: "SSH_user_name_with_private_key", url: "ssh://git@ilptltvbbp01.ecitele.com:7999/npttes/nptautomationtesting.git"
+                //}
+                git branch: "master", credentialsId: "SSH_user_name_with_private_key", url: "ssh://git@ilptltvbbp01.ecitele.com:7999/npttes/nptautomationtesting.git"
+
+                echo "\n=============  prepare Robot variables ============== "
+                script
+                {
+                    utils_groovy_module = load "${jenkins_pipeline_files_folder_path}/jenkinsUtils.groovy"
+                    def job_name = JOB_NAME
+                    println("The job name is:" + job_name)
+                    SetupNumber = utils_groovy_module.get_real_ne_setup_number(job_name)
+                    println("The setup number parsed is:" + SetupNumber)
+                    virtual_env_dir_name = "nptAutomationTesting_env"
+                    automation_project_root_dir = "${WORKSPACE}"
+                    //automation_project_root_dir += "/nptAutomationTesting"
+                }
+
+                echo "\n=============  Creating virtual environment ============= "
+                script
+                {
+                    utils_groovy_module.create_virtual_environment(virtual_env_dir_name)
+                }
+                echo "Done creating virtual environment"
+
+                echo "\n============= install automation project within the virtual environment ==========="
+                script
+                {
+                    utils_groovy_module.install_automation_project(virtual_env_dir_name)
+                }
+                echo "Done installing the automation project within the virtual environment"
+            }
+        }
+
+        stage("Deploy DSWP/ST versions on HW setup")
+        {
+            steps
+            {
+                echo "Deploying NPT related files (ST/DSWP) on the NEs of this setup"
+                script
+                {
+                    robot_command = utils_groovy_module.compose_npt_deploy_command_line(SetupNumber,
+                                                                            automation_project_root_dir,
+                                                                            "${WORKSPACE}",
+                                                                            "${params.FSL_PPC_DSWP_FILE}",
+                                                                            "${params.INTEL_x86_DSWP_FILE}",
+                                                                            "${params.ST_FILES_PATH}",
+                                                                            "",
+                                                                            "${deletePreviousSetupConfig}")
+                    echo "the robot command to use is:${robot_command}"
+                    utils_groovy_module.run_robot_command(robot_command, virtual_env_dir_name, "1")
+                }
+            }
+        }
+
+        stage("Get NEs current versions")
+        {
+            steps
+            {
+                echo "About to invoke the get current version utility"
+                script
+                {
+                    robot_command = utils_groovy_module.compose_get_ne_versions_command_line(SetupNumber,
+                                                                            automation_project_root_dir,
+                                                                            "${WORKSPACE}")
+                    echo "the robot command to use is:${robot_command}"
+                    utils_groovy_module.run_robot_command(robot_command, virtual_env_dir_name, "1")
+                }
+            }
+        }
+    } // stages
+
+    post
+    {
+        always
+        {
+            archiveArtifacts artifacts: '*.txt', fingerprint: true, allowEmptyArchive:true
+            archiveArtifacts artifacts: '*.html', fingerprint: true, allowEmptyArchive:true
+            archiveArtifacts artifacts: 'test_*.zip', fingerprint: true, allowEmptyArchive:true
+            archiveArtifacts artifacts: 'test_*/*/*', fingerprint: true, allowEmptyArchive:true
+            archiveArtifacts artifacts: 'restpy.log', fingerprint: true, allowEmptyArchive:true
+            script
+            {
+                String dswp_and_st_versions = utils_groovy_module.getDswpAndStVersionsForCurrentRun("${WORKSPACE}")
+                def subject = "${env.JOB_NAME}" + " with versions:" + dswp_and_st_versions + " - Build #${env.BUILD_NUMBER} ${currentBuild.result}"
+                utils_groovy_module.sendEmail(subject)
+            }
+        }
+
+        cleanup
+        {
+            echo "Starting post-cleanup stage, about to clean the workspace"
+            cleanWs()
+            echo "Done post-cleanup stage"
+        }
+    } // post
+} // pipeline

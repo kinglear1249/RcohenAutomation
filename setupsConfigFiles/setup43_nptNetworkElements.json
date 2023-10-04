@@ -1,0 +1,111 @@
+{
+  "setupDescription": "IP+VPLS. Tomer Mordechai. 170B",
+  "setupName": "Setup_43",
+  "NEs":
+  [
+    {
+      "neNum": 1,
+      "neName": "NE_1",
+      "neId": 74,
+      "ipAddress": "172.30.86.74",
+      "neType": "1200",
+      "isDualMcp": false,
+      "userName": "admin",
+      "password": "admin1"
+    },
+    {
+      "neNum": 2,
+      "neName": "NE_2",
+      "neId": 78,
+      "ipAddress": "172.30.86.78",
+      "neType": "1100",
+      "isDualMcp": false,
+      "userName": "admin",
+      "password": "admin1"
+    },
+    {
+      "neNum": 3,
+      "neName": "NE_3",
+      "neId": 79,
+      "ipAddress": "172.30.86.79",
+      "neType": "1100",
+      "isDualMcp": false,
+      "userName": "admin",
+      "password": "admin1"
+    },
+    {
+      "neNum": 4,
+      "neName": "NE_4",
+      "neId": 205,
+      "ipAddress": "172.30.86.205",
+      "neType": "1800",
+      "isDualMcp": false,
+      "userName": "admin",
+      "password": "admin1"
+    },
+    {
+      "neNum": 5,
+      "neName": "NE_5",
+      "neId": 73,
+      "ipAddress": "172.30.86.73",
+      "neType": "1800",
+      "isDualMcp": false,
+      "userName": "admin",
+      "password": "admin1"
+    },
+    {
+      "neNum": 6,
+      "neName": "NE_6",
+      "neId": 31,
+      "ipAddress": "172.30.86.31",
+      "neType": "2100",
+      "neCpuType": "x86_64_intel",
+      "isDualMcp": false,
+      "userName": "admin",
+      "password": "admin1"
+    },
+    {
+      "neNum": 7,
+      "neName": "NE_7",
+      "neId": 32,
+      "ipAddress": "172.30.86.32",
+      "neType": "2100",
+      "neCpuType": "x86_64_intel",
+      "isDualMcp": false,
+      "userName": "admin",
+      "password": "admin1"
+    },
+    {
+      "neNum": 8,
+      "neName": "NE_8",
+      "neId": 30,
+      "ipAddress": "172.30.86.30",
+      "neType": "2100",
+      "neCpuType": "x86_64_intel",
+      "isDualMcp": false,
+      "userName": "admin",
+      "password": "admin1"
+    },
+    {
+      "neNum": 9,
+      "neName": "NE_9",
+      "neId": 33,
+      "ipAddress": "172.30.86.33",
+      "neType": "2100",
+      "neCpuType": "x86_64_intel",
+      "isDualMcp": false,
+      "userName": "admin",
+      "password": "admin1"
+    },
+    {
+      "neNum": 10,
+      "neName": "NE_10",
+      "neId": 75,
+      "ipAddress": "172.30.86.75",
+      "neType": "1200",
+      "isDualMcp": false,
+      "userName": "admin",
+      "password": "admin1"
+    }
+  ]
+}

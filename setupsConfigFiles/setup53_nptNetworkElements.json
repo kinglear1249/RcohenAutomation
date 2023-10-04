@@ -1,0 +1,37 @@
+{
+	"setupName": "Setup_53",
+	"NEs": [
+    {
+			"neNum": 1,
+			"neName": "NE_1",
+			"neId": 50,
+			"ipAddress": "172.30.96.50",
+			"neType": "2700",
+      "neCpuType": "x86_64_intel",
+			"isDualMcp": false,
+			"userName": "admin",
+			"password": "admin1",
+			"neCards": [
+				{
+					"cardType": "dhio2t-mr",
+					"slot": 4,
+          "ports": [
+            {
+              "portNum": 101,
+              "description": "NE1toTeqPort1",
+              "portRate": "et",
+              "physicalPort": 1,
+              "teqPort": {
+                "teqPortName": "port1",
+                "teqSlot": 1,
+                "teqPhysicalPort": 13,
+                "media": "fiber",
+                "speed": "speed10g"
+              }
+            }
+          ]
+				}
+			]
+		}
+  ]
+}

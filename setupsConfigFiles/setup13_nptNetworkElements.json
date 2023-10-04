@@ -1,0 +1,203 @@
+{
+  "setupName": "Setup_13",
+  "teqChassisIp": "172.30.80.134",
+  "NEs":
+  [
+    {
+      "neNum": 1,
+      "neName": "NE_1",
+      "neId": 40,
+      "ipAddress": "172.30.82.40",
+      "neType": "1250",
+      "isDualMcp": false,
+      "userName": "admin",
+      "password": "admin1",
+      "neCards": [
+        {
+          "cardType": "dhxe-4",
+          "slot": 4,
+          "ports": [
+            {
+              "portNum": 101,
+              "description": "NE1toTeqPort1",
+              "portRate": "xe",
+              "physicalPort": 1,
+              "teqPort": {
+                "teqPortName": "port1",
+                "teqSlot": 2,
+                "teqPhysicalPort": 13,
+                "media": "fiber",
+                "speed": "speed10g"
+              }
+            },
+            {
+              "portNum": 121,
+              "description": "NE1toNE2Port1",
+              "portRate": "xe",
+              "physicalPort": 2
+            },
+            {
+              "portNum": 131,
+              "description": "NE1toNE3Port1",
+              "portRate": "xe",
+              "physicalPort": 3
+            },
+            {
+              "portNum": 141,
+              "description": "NE1toNE4Port1",
+              "portRate": "xe",
+              "physicalPort": 4
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "neNum": 2,
+      "neName": "NE_2",
+      "neId": 41,
+      "ipAddress": "172.30.82.41",
+      "neType": "1250",
+      "isDualMcp": false,
+      "userName": "admin",
+      "password": "admin1",
+      "neCards": [
+        {
+          "cardType": "dhxe-4",
+          "slot": 4,
+          "ports": [
+            {
+              "portNum": 201,
+              "description": "NE2toTeqPort1",
+              "portRate": "xe",
+              "physicalPort": 2,
+              "teqPort": {
+                "teqPortName": "port2",
+                "teqSlot": 2,
+                "teqPhysicalPort": 14,
+                "media": "fiber",
+                "speed": "speed10g"
+              }
+            },
+            {
+              "portNum": 211,
+              "description": "NE2toNE1Port1",
+              "portRate": "xe",
+              "physicalPort": 1
+            },
+            {
+              "portNum": 231,
+              "description": "NE2toNE3Port1",
+              "portRate": "xe",
+              "physicalPort": 3
+            },
+            {
+              "portNum": 241,
+              "description": "NE2toNE4Port1",
+              "portRate": "xe",
+              "physicalPort": 4
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "neNum": 3,
+      "neName": "NE_3",
+      "neId": 42,
+      "ipAddress": "172.30.82.42",
+      "neType": "1250",
+      "isDualMcp": false,
+      "userName": "admin",
+      "password": "admin1",
+      "neCards": [
+        {
+          "cardType": "dhxe-4",
+          "slot": 4,
+          "ports": [
+            {
+              "portNum": 301,
+              "description": "NE3toTeqPort1",
+              "portRate": "xe",
+              "physicalPort": 3,
+              "teqPort": {
+                "teqPortName": "port3",
+                "teqSlot": 2,
+                "teqPhysicalPort": 15,
+                "media": "fiber",
+                "speed": "speed10g"
+              }
+            },
+            {
+              "portNum": 311,
+              "description": "NE3toNE1Port1",
+              "portRate": "xe",
+              "physicalPort": 1
+            },
+            {
+              "portNum": 321,
+              "description": "NE3toNE2Port1",
+              "portRate": "xe",
+              "physicalPort": 2
+            },
+            {
+              "portNum": 341,
+              "description": "NE3toNE4Port1",
+              "portRate": "xe",
+              "physicalPort": 4
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "neNum": 4,
+      "neName": "NE_4",
+      "neId": 43,
+      "ipAddress": "172.30.82.43",
+      "neType": "1250",
+      "isDualMcp": false,
+      "userName": "admin",
+      "password": "admin1",
+      "neCards": [
+        {
+          "cardType": "dhxe-4",
+          "slot": 4,
+          "ports": [
+            {
+              "portNum": 401,
+              "description": "NE4toTeqPort1",
+              "portRate": "xe",
+              "physicalPort": 4,
+              "teqPort": {
+                "teqPortName": "port4",
+                "teqSlot": 2,
+                "teqPhysicalPort": 16,
+                "media": "fiber",
+                "speed": "speed10g"
+              }
+            },
+            {
+              "portNum": 411,
+              "description": "NE3toNE1Port1",
+              "portRate": "xe",
+              "physicalPort": 1
+            },
+            {
+              "portNum": 421,
+              "description": "NE3toNE2Port1",
+              "portRate": "xe",
+              "physicalPort": 2
+            },
+            {
+              "portNum": 431,
+              "description": "NE4toNE3Port1",
+              "portRate": "xe",
+              "physicalPort": 3
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

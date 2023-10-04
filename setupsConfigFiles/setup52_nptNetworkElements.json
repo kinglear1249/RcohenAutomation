@@ -1,0 +1,16 @@
+{
+	"setupName": "Setup_52",
+	"NEs": [
+    {
+			"neNum": 1,
+			"neName": "NE_1",
+			"neId": 20,
+			"ipAddress": "172.30.99.20",
+			"neType": "2400",
+			"neCpuType": "x86_64_intel",
+			"isDualMcp": false,
+			"userName": "admin",
+			"password": "admin1"
+		}
+  ]
+}

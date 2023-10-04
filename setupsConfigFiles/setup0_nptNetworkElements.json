@@ -1,0 +1,166 @@
+{
+  "setupName": "Setup_KVM",
+  "NEs":
+  [
+    {
+      "neNum": 1,
+      "neName": "NE_1",
+      "neId": 1,
+      "ipAddress": "172.30.85.205",
+      "neType": "1800",
+      "userName": "admin",
+      "password": "admin1",
+      "neCards": [
+        {
+          "cardType": "dhge-10",
+          "slot": 10,
+          "ports": [
+            {
+              "portNum": 101,
+              "description": "NE1toTeqPort1",
+              "portRate": "ge",
+              "physicalPort": 3
+            },
+            {
+              "portNum": 121,
+              "description": "NE1toNE2Port1",
+              "portRate": "ge",
+              "physicalPort": 2
+            },
+            {
+              "portNum": 131,
+              "description": "NE1toNE3Port1",
+              "portRate": "ge",
+              "physicalPort": 4
+            },
+            {
+              "portNum": 141,
+              "description": "NE1toNE4Port1",
+              "portRate": "ge",
+              "physicalPort": 3
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "neNum": 2,
+      "neName": "NE_2",
+      "neId": 2,
+      "ipAddress": "172.30.85.206",
+      "neType": "1800",
+      "userName": "admin",
+      "password": "admin1",
+      "neCards": [
+        {
+          "cardType": "dhge-10",
+          "slot": 10,
+          "ports": [
+            {
+              "portNum": 201,
+              "description": "NE2toTeqPort1",
+              "portRate": "ge",
+              "physicalPort": 4
+            },
+            {
+              "portNum": 211,
+              "description": "NE2toNE1Port1",
+              "portRate": "ge",
+              "physicalPort": 2
+            },
+            {
+              "portNum": 231,
+              "description": "NE2toNE3Port1",
+              "portRate": "ge",
+              "physicalPort": 5
+            },
+            {
+              "portNum": 241,
+              "description": "NE2toNE4Port1",
+              "portRate": "ge",
+              "physicalPort": 4
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "neNum": 3,
+      "neName": "NE_3",
+      "neId": 3,
+      "ipAddress": "172.30.85.207",
+      "neType": "1800",
+      "userName": "admin",
+      "password": "admin1",
+      "neCards": [
+        {
+          "cardType": "dhge-10",
+          "slot": 10,
+          "ports": [
+            {
+              "portNum": 301,
+              "description": "NE3toTeqPort1",
+              "portRate": "ge",
+              "physicalPort": 5
+            },
+            {
+              "portNum": 311,
+              "description": "NE3toNE1Port1",
+              "portRate": "ge",
+              "physicalPort": 2
+            },
+            {
+              "portNum": 321,
+              "description": "NE3toNE2Port1",
+              "portRate": "ge",
+              "physicalPort": 3
+            },
+            {
+              "portNum": 341,
+              "description": "NE3toNE4Port1",
+              "portRate": "ge",
+              "physicalPort": 5
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "neNum": 4,
+      "neName": "NE_4",
+      "neId": 4,
+      "ipAddress": "172.30.85.208",
+      "neType": "1800",
+      "userName": "admin",
+      "password": "admin1",
+      "neCards": [
+        {
+          "cardType": "dhge-10",
+          "slot": 10,
+          "ports": [
+            {
+              "portNum": 411,
+              "description": "NE4toNE1Port1",
+              "slot": 10,
+              "cardType": "dhge-10",
+              "portRate": "ge",
+              "physicalPort": 2
+            },
+            {
+              "portNum": 421,
+              "description": "NE4toNE2Port1",
+              "portRate": "ge",
+              "physicalPort": 3
+            },
+            {
+              "portNum": 431,
+              "description": "NE4toNE3Port1",
+              "portRate": "ge",
+              "physicalPort": 4
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

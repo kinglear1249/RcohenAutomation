@@ -1,0 +1,163 @@
+
+pipeline
+{
+    agent { label 'Npt-Agent' }
+    options
+    {
+        buildDiscarder(logRotator(numToKeepStr: "30", artifactNumToKeepStr: "30"))
+        timestamps ()
+    }
+
+    parameters
+    {
+        gitParameter branchFilter: "origin/(.*)", defaultValue: "master", name: "BRANCH", type: "PT_BRANCH"
+        choice(name: "TestSuite", choices: "none\nsfa", description: "Test suite to run only on SFA setup")
+        choice(name: "SingleTestToRun", choices:"none\n1780_evpnSfaSanityTest\n0001_evpnSfaTopology", description: "Enter the name of a SINGLE test you wish to run")
+        string(name: "CostumeTestSuite", description: "Enter the name of a your costume test suite you wish to run")
+        string(name: "NumberOfTimesToRunTest", defaultValue: "1", description: "Enter the number of times you wish to run the entire same test/suite in a loop (until it fails)")
+        choice(name: "IsGrEnabled", choices: "false\ntrue", description: "Indicates if GR will be enabled on NEs")
+        choice(name: "StopOnFail", choices: "no\nyes", description: "Should the run stop upon the first failure (step/test)")
+        choice(name: "WithTraffic", choices: "false\ntrue", description: "Indicates if Traffic tests will be enabled on NEs")
+        choice(name: "Stability", choices: "false\ntrue", description: "Indicates if Stability session will be performed")
+        choice(name: "deletePreviousSetupConfig", choices: "true\nfalse", description: "Indicates if previous setup configuration will be deleted")
+    }
+
+    environment
+    {
+        jenkins_pipeline_files_folder_path = "jenkinsPipelineFiles"
+    }
+
+    stages
+    {
+        stage("Prepare Automation")
+        {
+            steps
+            {
+                //
+                script
+                {
+                    git branch: "${params.BRANCH}", credentialsId: "SSH_user_name_with_private_key", url: "ssh://git@ilptltvbbp01.ecitele.com:7999/npttes/nptautomationtesting.git"
+                }
+
+                //
+                echo "\n=============  prepare Robot variables ============== "
+                script
+                {
+                    echo "TestSuite is:${params.TestSuite}"
+                    echo "SingleTestToRun is:${params.SingleTestToRun}"
+                    echo "CostumeTestSuite is:${params.CostumeTestSuite}"
+                    utils_groovy_module = load "${jenkins_pipeline_files_folder_path}/jenkinsUtils.groovy"
+                    test_suite_robot_variable = utils_groovy_module.get_desired_test_suite_robot_variable(params.TestSuite, params.SingleTestToRun, params.CostumeTestSuite)
+                    def job_name = JOB_NAME
+                    println("The job name is:" + job_name)
+                    SetupNumber = utils_groovy_module.get_real_ne_setup_number(job_name)
+                    println("The setup number parsed is:" + SetupNumber)
+                    virtual_env_dir_name = "nptAutomationTesting_env"
+                    automation_project_root_dir = "${WORKSPACE}"
+                    //automation_project_root_dir += "/nptAutomationTesting"
+                }
+                echo "test suite robot variable to use was set to:${test_suite_robot_variable}"
+
+                //
+                echo "\n=============  Creating virtual environment ============= "
+                script
+                {
+                    utils_groovy_module.create_virtual_environment(virtual_env_dir_name)
+                }
+                echo "Done creating virtual environment"
+
+                //
+                echo "\n============= install automation project within the virtual environment ==========="
+                script
+                {
+                    utils_groovy_module.install_automation_project(virtual_env_dir_name)
+                }
+                echo "Done installing the automation project within the virtual environment"
+            }
+        }
+
+        stage("Get NEs current versions")
+        {
+            steps
+            {
+                echo "About to invoke the get current version utility"
+                script
+                {
+                    robot_command = utils_groovy_module.compose_get_ne_versions_command_line(SetupNumber,
+                                                                            automation_project_root_dir,
+                                                                            "${WORKSPACE}")
+                    echo "the robot command to use is:${robot_command}"
+                    utils_groovy_module.run_robot_command(robot_command, virtual_env_dir_name, "1")
+                }
+            }
+        }
+
+        stage("Run tests")
+        {
+            steps
+            {
+                sh """
+                    echo "list all files in temporary workspace before running tests"
+                    ls -la ${WORKSPACE}
+                """
+                echo "\n============= Compose Robot command ================="
+
+                script
+                {
+                    robot_command = utils_groovy_module.compose_npt_automation_tests_command_line(SetupNumber,
+                                                                          "${WORKSPACE}",
+                                                                          "${test_suite_robot_variable}",
+                                                                          "${IsGrEnabled}",
+                                                                          "${StopOnFail}",
+                                                                          "${WithTraffic}",
+                                                                          "${Stability}",
+                                                                          "${deletePreviousSetupConfig}")
+
+                    echo "\n============= Run Tests ====================="
+                    utils_groovy_module.run_robot_command(robot_command, virtual_env_dir_name, params.NumberOfTimesToRunTest)
+                }
+
+                echo "Done running the robot test(s) suite(s) from within the virtual environment"
+            }
+        }
+    } // stages
+
+    post
+    {
+        always
+        {
+            archiveArtifacts artifacts: '*.html', fingerprint: true, allowEmptyArchive:true
+            archiveArtifacts artifacts: '*.txt', fingerprint: true, allowEmptyArchive:true
+            archiveArtifacts artifacts: 'test_*.zip', fingerprint: true, allowEmptyArchive:true
+            archiveArtifacts artifacts: 'test_*/*/*', fingerprint: true, allowEmptyArchive:true
+            archiveArtifacts artifacts: 'restpy.log', fingerprint: true, allowEmptyArchive:true
+            script
+            {
+                String dswp_and_st_versions = utils_groovy_module.getDswpAndStVersionsForCurrentRun("${WORKSPACE}")
+                def subject = "${env.JOB_NAME}" + " with versions:" + dswp_and_st_versions + " - Build #${env.BUILD_NUMBER} ${currentBuild.result}"
+                utils_groovy_module.sendEmail(subject)
+            }
+
+            script
+            {
+                step([
+                        $class                    : "RobotPublisher",
+                        outputPath                : "${env.WORKSPACE}",
+                        outputFileName            : "*.xml",
+                        reportFileName            : "report.html",
+                        logFileName               : "log.html",
+                        disableArchiveOutput      : false
+                     ])
+            }
+
+        }
+
+        cleanup
+        {
+            echo "Starting post-cleanup stage, about to clean the workspace"
+            cleanWs()
+            echo "Done post-cleanup stage"
+        }
+    } // post
+} // pipeline
+
